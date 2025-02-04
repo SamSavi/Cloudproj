@@ -1,73 +1,62 @@
-const express = require("express");
+onst express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
-const PORT = 3020;
+const port = 3020;
 
-app.use(express.json()); // Middleware to parse JSON
+app.use(bodyParser.json());
 
-let users = [{ username: "samsavi1", password: "aupp1" }]; // Predefined user
+let users = [];
 
-// 1. Registration API (POST)
+// 1. Registration Service
 app.post("/register", (req, res) => {
-    const { username, password } = req.body;
-
-    // Allow registration only for "samsavi1"
-    if (username !== "samsavi1" || password !== "aupp1") {
-        return res.status(403).json({ message: "Only predefined user can register" });
+    const { username, password, email } = req.body;
+    if (!username  !password  !email) {
+        return res.status(400).json({ message: "All fields are required" });
     }
-
-    res.status(201).json({ message: "User registered successfully", users });
+    const id = users.length + 1;
+    users.push({ id, username, password, email });
+    res.status(201).json({ message: "User registered successfully", id });
 });
 
-// 2. Login API (POST)
+// 2. Login Service
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
     const user = users.find(u => u.username === username && u.password === password);
-    
     if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: "Invalid username or password" });
     }
-
-    res.json({ message: "Login successful", username });
+    res.json({ message: "Login successful", id: user.id });
 });
 
-// 3. Search User API (GET)
+// 3. Search Service
 app.get("/search", (req, res) => {
     const { username } = req.query;
     const user = users.find(u => u.username === username);
-
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
-
-    res.json({ user });
+    res.json(user);
 });
 
-// 4. Update User Profile API (PUT)
+// 4. Profile Update Service
 app.put("/update", (req, res) => {
-    const { username, newPassword } = req.body;
-    
-    if (username !== "samsavi1") {
-        return res.status(403).json({ message: "Only predefined user can update profile" });
+    const { username, email } = req.body;
+    let user = users.find(u => u.username === username);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
     }
-
-    users = users.map(user =>
-        user.username === username ? { ...user, password: newPassword } : user
-    );
-
-    res.json({ message: "User updated successfully", users });
+    user.email = email || user.email;
+    res.json({ message: "User updated successfully" });
 });
 
-// 5. Delete User API (DELETE)
+// 5. Delete User Service
 app.delete("/delete", (req, res) => {
     const { username } = req.body;
-
-    if (username !== "samsavi1") {
-        return res.status(403).json({ message: "Only predefined user can be deleted" });
-    }
-
     users = users.filter(u => u.username !== username);
-    res.json({ message: "User deleted successfully", users });
+    res.json({ message: "User deleted successfully" });
 });
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Start Server
+app.listen(port, () => {
+    console.log(Server running on http://localhost:${port});
+});
