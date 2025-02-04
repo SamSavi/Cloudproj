@@ -1,4 +1,4 @@
-onst express = require("express");
+const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const port = 3020;
@@ -10,7 +10,7 @@ let users = [];
 // 1. Registration Service
 app.post("/register", (req, res) => {
     const { username, password, email } = req.body;
-    if (!username  !password  !email) {
+    if (!username || !password || !email) {
         return res.status(400).json({ message: "All fields are required" });
     }
     const id = users.length + 1;
@@ -58,5 +58,5 @@ app.delete("/delete", (req, res) => {
 
 // Start Server
 app.listen(port, () => {
-    console.log(Server running on http://localhost:${port});
+    console.log(`Server running on http://localhost:${port}`);
 });
